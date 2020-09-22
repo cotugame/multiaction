@@ -4,10 +4,15 @@ const Stage = require('./stages/sample')
 function main(param) {
 	const scene = new g.Scene({ game: g.game });
 	const stage = new Stage(scene)
+
+	const camera = new g.Camera2D({ game: g.game })
+	g.game.focusingCamera = camera
+	g.game.modified = true
+
 	scene.loaded.add(function () {
 		const ax = 1/2
 		const sx = 1
-		const maxVx = 4
+		const maxVx = 8
 		const characters = {}
 
 		function createPlayer(id) {
@@ -28,7 +33,7 @@ function main(param) {
 				y: y,
 				width: 32,
 				height: 32,
-				cssColor: (id === selfId) ? '#00ff00' : "#ff0000"
+				cssColor: (id === g.game.selfId) ? '#00ff00' : "#ff0000"
 			})
 			rect.update.add(() => {
 				if (characters[id].mouseOn) {
@@ -48,16 +53,21 @@ function main(param) {
 						if (characters[id].vx > 0) characters[id].vx = 0
 					}
 				}
-				rect.x += characters[id].vx
+				characters[id].x += characters[id].vx
+				rect.x = characters[id].x
 				rect.modified()
+				if (id === g.game.selfId) {
+					camera.x = characters[id].x-(g.game.width/2+32/2)
+					camera.y = characters[id].y-(g.game.height*3/4+32/2)
+					stage.setpos(camera.x, camera.y)
+					camera.modified()
+				}
 			})
 			scene.append(rect)
 		}
 
-		const selfId = g.game.selfId
-		console.log('g.game.selfId:', g.game.selfId, selfId)
-		if (characters[selfId] == null) {
-			createPlayer(selfId)
+		if (characters[g.game.selfId] == null) {
+			createPlayer(g.game.selfId)
 		}
 
 		const playerMain = (ev, delta = true) => {

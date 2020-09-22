@@ -19,6 +19,12 @@ class Stage {
 		}
 		scene.append(this.field)
 	}
+
+	setpos(x, y) {
+		this.field.x = (x & -this.size*2)
+		this.field.y = (y & -this.size*2)
+		this.field.modified()
+	}
 }
 
 module.exports = Stage
