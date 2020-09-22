@@ -8,13 +8,18 @@
 			"type": "script",
 			"path": "script/main.js",
 			"global": true
+		},
+		"sample": {
+			"type": "script",
+			"path": "script/stages/sample.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},
 	"environment": {
 		"sandbox-runtime": "2",
-		"niconico" : {
-			"supportedModes" : [
+		"niconico": {
+			"supportedModes": [
 				"multi"
 			]
 		}

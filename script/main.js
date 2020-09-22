@@ -1,7 +1,9 @@
 'use strict'
+const Stage = require('./stages/sample')
 
 function main(param) {
 	const scene = new g.Scene({ game: g.game });
+	const stage = new Stage(scene)
 	scene.loaded.add(function () {
 		const characters = {}
 
