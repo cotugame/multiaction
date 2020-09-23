@@ -16,8 +16,8 @@ function main(param) {
 		const characters = {}
 
 		function createPlayer(id) {
-			const x = g.game.width/2
-			const y = g.game.height*3/4
+			const x = g.game.width/2-32/2
+			const y = g.game.height
 			characters[id] = {
 				x: x,
 				y: y,
@@ -58,7 +58,7 @@ function main(param) {
 				rect.modified()
 				if (id === g.game.selfId) {
 					camera.x = characters[id].x-(g.game.width/2+32/2)
-					camera.y = characters[id].y-(g.game.height*3/4+32/2)
+					camera.y = characters[id].y-(g.game.height-96)
 					stage.setpos(camera.x, camera.y)
 					camera.modified()
 				}
@@ -67,7 +67,7 @@ function main(param) {
 		}
 
 		if (characters[g.game.selfId] == null) {
-			createPlayer(g.game.selfId)
+		//	createPlayer(g.game.selfId)
 		}
 
 		const playerMain = (ev, delta = true) => {
