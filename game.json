@@ -18,6 +18,11 @@
 			"type": "script",
 			"path": "script/entities/enemy/enemy.js",
 			"global": true
+		},
+		"normal": {
+			"type": "script",
+			"path": "script/entities/player/normal.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},

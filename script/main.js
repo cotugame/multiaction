@@ -1,6 +1,7 @@
 'use strict'
 const Stage = require('./stages/sample')
 const Enemy = require('./entities/enemy/enemy.js')
+const Normal = require('./entities/player/normal.js')
 
 function main(param) {
 	const scene = new g.Scene({ game: g.game });
@@ -18,6 +19,7 @@ function main(param) {
 		const maxVy = 8
 		const characters = {}
 		const enemies = []
+		const pattacks = []
 
 		enemies.push(new Enemy(scene, 8, 29))
 		enemies.push(new Enemy(scene, 16, 29))
@@ -37,6 +39,8 @@ function main(param) {
 				y: y,
 				vx: 0,
 				vy: 0,
+				dir: 1,
+				attackCount: 0,
 				jump: false,
 				dead: false,
 				mouseOn: false,
@@ -56,9 +60,11 @@ function main(param) {
 					if (characters[id].mouseX > g.game.width/2) {
 						characters[id].vx += ax
 						if (characters[id].vx > maxVx) characters[id].vx = maxVx
+						characters[id].dir = 1
 					} else {
 						characters[id].vx -= ax
 						if (characters[id].vx < -maxVx) characters[id].vx = -maxVx
+						characters[id].dir = -1
 					}
 					if (characters[id].jump === false) {
 						if (characters[id].mouseY < g.game.height/2) {
@@ -139,6 +145,11 @@ function main(param) {
 					})
 				}
 			//	console.log(Object.keys(characters).length, enemies.length)
+
+				if (++characters[id].attackCount > 15) {
+					new Normal(scene, characters[id].x, characters[id].y-height/2, characters[id].dir)
+					characters[id].attackCount  = 0
+				}
 			})
 			scene.append(rect)
 		}
