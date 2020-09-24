@@ -3,22 +3,22 @@
 class Stage {
 	constructor(scene) {
 		const areaNum = 4
-		const width = 256
-		const height = 32
+		this.width = 256
+		this.height = 32
 		this.areas = new Array(areaNum)
-		this.areas[0] = new Array(height)
-		for (let y = 0; y < height; y++) {
-			this.areas[0][y] = new Array(width)
-			for (let x = 0; x < width; x++) {
-				const chr = (y < height-2) ? 0 : 8
+		this.areas[0] = new Array(this.height)
+		for (let y = 0; y < this.height; y++) {
+			this.areas[0][y] = new Array(this.width)
+			for (let x = 0; x < this.width; x++) {
+				const chr = (y < this.height-2) ? 0 : 8
 			//	this.areas[0][y][x] = {chr: chr, atr: chr}
 				this.areas[0][y][x] = {chr: chr, atr: chr}
 			}
 		}
 		for (let j = 0; j < 64; j++) {
 			const length = g.game.random.get(4, 7)
-			const x = g.game.random.get(0, width-length-1)
-			const y = g.game.random.get(0, height-8)
+			const x = g.game.random.get(0, this.width-length-1)
+			const y = g.game.random.get(0, this.height-8)
 			for (let i = 0; i < length; i++) {
 				const chr = 7
 				this.areas[0][y][x+i] = {chr: chr, atr: chr}
@@ -26,24 +26,24 @@ class Stage {
 		}
 		for (let j = 0; j < 128; j++) {
 			const length = g.game.random.get(4, 15)
-			const x = g.game.random.get(0, width-length-1)
-			const y = g.game.random.get(0, height-4)
+			const x = g.game.random.get(0, this.width-length-1)
+			const y = g.game.random.get(0, this.height-4)
 			for (let i = 0; i < length; i++) {
 				const chr = 9
 				this.areas[0][y][x+i] = {chr: chr, atr: chr}
 			}
 		}
 /*
-		for (let x = 0; x < width; x++) {
+		for (let x = 0; x < this.width; x++) {
 			const chr = x%16
 			this.areas[0][0][x] = {chr: chr, atr: chr}
-			this.areas[0][height-1][x] = {chr: chr, atr: chr}
+			this.areas[0][this.height-1][x] = {chr: chr, atr: chr}
 		}
 */
-		for (let y = 0; y < height; y++) {
+		for (let y = 0; y < this.height; y++) {
 			const chr = y%16
 			this.areas[0][y][0] = {chr: chr, atr: chr}
-			this.areas[0][y][width-1] = {chr: chr, atr: chr}
+			this.areas[0][y][this.width-1] = {chr: chr, atr: chr}
 		}
 
 		const colors = [
@@ -68,8 +68,8 @@ class Stage {
 
 		this.size = 32
 		this.field = new g.E({ scene: scene })
-		for(let y = 0; y < height; y++) {
-			for(let x = 0; x < width; x++) {
+		for(let y = 0; y < this.height; y++) {
+			for(let x = 0; x < this.width; x++) {
 				const rect = new g.FilledRect({
 					scene: scene,
 					x: x*this.size,
@@ -90,7 +90,12 @@ class Stage {
 	}
 
 	getAtr(x, y) {
-		return this.areas[0][0][x]
+		const chipSize = Stage.chipSize;
+		const xx = Math.floor(x/chipSize)
+		const yy = Math.floor(y/chipSize)
+		if (xx < 0 || xx >= this.width) return 0
+		if (yy < 0 || yy >= this.height) return 0
+		return this.areas[0][yy][xx].atr
 	}
 
 	setpos(x, y) {

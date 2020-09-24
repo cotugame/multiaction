@@ -69,14 +69,37 @@ function main(param) {
 					}
 				}
 				characters[id].x += characters[id].vx
+				if (characters[id].vx < 0) {
+					if (stage.getAtr(characters[id].x-width/2, characters[id].y-1) & 8) {
+						characters[id].x += (chipSize-(characters[id].x-width/2)%chipSize)
+						characters[id].vx = 0
+					}
+				} else {
+					if (stage.getAtr(characters[id].x+width/2, characters[id].y-1) & 8) {
+						characters[id].x -= (characters[id].x-width/2)%chipSize
+						characters[id].vx = 0
+					}
+				}
 
-						characters[id].vy += ay
-						if (characters[id].vy > maxVy) characters[id].vy = maxVy
+				characters[id].vy += ay
+				if (characters[id].vy > maxVy) characters[id].vy = maxVy
 				characters[id].y += characters[id].vy
-				if (characters[id].y > chipSize*32) {
-					characters[id].y = chipSize*32
+				if (characters[id].y > chipSize*stage.height) {
+					characters[id].y = chipSize*stage.height
 					characters[id].vy = 0
 					characters[id].jump = false
+				}
+				if (characters[id].vy < 0) {
+					if (stage.getAtr(characters[id].x, characters[id].y-height) & 8) {
+						characters[id].y += chipSize-characters[id].y%chipSize
+						characters[id].vy = 0
+					}
+				} else {
+					if (stage.getAtr(characters[id].x, characters[id].y) & 8) {
+						characters[id].y -= characters[id].y%chipSize
+						characters[id].vy = 0
+						characters[id].jump = false
+					}
 				}
 
 				rect.x = Math.floor(characters[id].x-width/2)
