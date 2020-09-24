@@ -13,6 +13,11 @@
 			"type": "script",
 			"path": "script/stages/sample.js",
 			"global": true
+		},
+		"enemy": {
+			"type": "script",
+			"path": "script/entities/enemy/enemy.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},

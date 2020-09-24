@@ -1,5 +1,6 @@
 'use strict'
 const Stage = require('./stages/sample')
+const Enemy = require('./entities/enemy/enemy.js')
 
 function main(param) {
 	const scene = new g.Scene({ game: g.game });
@@ -16,6 +17,11 @@ function main(param) {
 		const maxVx = 8
 		const maxVy = 8
 		const characters = {}
+		const enemies = []
+
+		enemies.push(new Enemy(scene, 8, 29))
+		enemies.push(new Enemy(scene, 16, 29))
+		enemies.push(new Enemy(scene, 32, 29))
 
 		function createPlayer(id) {
 			const chipSize = Stage.chipSize
@@ -32,6 +38,7 @@ function main(param) {
 				vx: 0,
 				vy: 0,
 				jump: false,
+				dead: false,
 				mouseOn: false,
 				mouseX: 0,
 				mouseY: 0
@@ -45,7 +52,7 @@ function main(param) {
 				cssColor: (id === g.game.selfId) ? '#00ff00' : "#ff0000"
 			})
 			rect.update.add(() => {
-				if (characters[id].mouseOn) {
+				if (characters[id].mouseOn && characters[id].dead === false) {
 					if (characters[id].mouseX > g.game.width/2) {
 						characters[id].vx += ax
 						if (characters[id].vx > maxVx) characters[id].vx = maxVx
@@ -84,19 +91,27 @@ function main(param) {
 				characters[id].vy += ay
 				if (characters[id].vy > maxVy) characters[id].vy = maxVy
 				characters[id].y += characters[id].vy
-				if (characters[id].y > chipSize*stage.height) {
-					characters[id].y = chipSize*stage.height
-					characters[id].vy = 0
-					characters[id].jump = false
-				}
-				if (characters[id].vy < 0) {
-					if (stage.getAtr(characters[id].x, characters[id].y-height) & 8) {
-						characters[id].y += chipSize-characters[id].y%chipSize
+				if (characters[id].dead === false) {
+					if (characters[id].y > chipSize*stage.height) {
+						characters[id].y = chipSize*stage.height
 						characters[id].vy = 0
+						characters[id].jump = false
+					}
+					if (characters[id].vy < 0) {
+						if (stage.getAtr(characters[id].x, characters[id].y-height) & 8) {
+							characters[id].y += chipSize-characters[id].y%chipSize
+							characters[id].vy = 0
+						}
+					} else {
+						if (stage.getAtr(characters[id].x, characters[id].y) & 8) {
+							characters[id].y -= characters[id].y%chipSize
+							characters[id].vy = 0
+							characters[id].jump = false
+						}
 					}
 				} else {
-					if (stage.getAtr(characters[id].x, characters[id].y) & 8) {
-						characters[id].y -= characters[id].y%chipSize
+					if (characters[id].y > chipSize*stage.height+height) {
+						characters[id].y = chipSize*stage.height+height
 						characters[id].vy = 0
 						characters[id].jump = false
 					}
@@ -105,11 +120,25 @@ function main(param) {
 				rect.x = Math.floor(characters[id].x-width/2)
 				rect.y = Math.floor(characters[id].y-height)
 				rect.modified()
-				if (id === g.game.selfId) {
+				if (id === g.game.selfId && characters[id].dead === false) {
 					camera.x = Math.floor(characters[id].x-playerX)
 					camera.y = Math.floor(characters[id].y-playerY)
 					camera.modified()
 				}
+
+				if (characters[id].dead === false) {
+					enemies.forEach((enemy) => {
+						const dx = characters[id].x-enemy.x
+						const dy = characters[id].y-enemy.y
+						const dis = Math.sqrt(dx**2+dy**2)
+						if (dis < 32) {
+							characters[id].vy = -4
+							characters[id].jump = true
+							characters[id].dead = true
+						}
+					})
+				}
+			//	console.log(Object.keys(characters).length, enemies.length)
 			})
 			scene.append(rect)
 		}
