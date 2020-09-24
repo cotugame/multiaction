@@ -11,28 +11,37 @@ function main(param) {
 
 	scene.loaded.add(function () {
 		const ax = 1/2
+		const ay = 1/4
 		const sx = 1
 		const maxVx = 8
+		const maxVy = 8
 		const characters = {}
 
 		function createPlayer(id) {
-			const x = g.game.width/2-32/2
-			const y = g.game.height
+			const chipSize = Stage.chipSize
+			const playerX = g.game.width/2
+			const playerY = g.game.height-chipSize*2
+			const width = 32
+			const height = 32
+
+			const x = 8*chipSize+width/2
+			const y = (29+1)*chipSize
 			characters[id] = {
 				x: x,
 				y: y,
 				vx: 0,
 				vy: 0,
+				jump: false,
 				mouseOn: false,
 				mouseX: 0,
 				mouseY: 0
 			}
 			const rect = new g.FilledRect({
 				scene: scene,
-				x: x,
-				y: y,
-				width: 32,
-				height: 32,
+				x: x-width/2,
+				y: y-height,
+				width: width,
+				height: height,
 				cssColor: (id === g.game.selfId) ? '#00ff00' : "#ff0000"
 			})
 			rect.update.add(() => {
@@ -44,6 +53,12 @@ function main(param) {
 						characters[id].vx -= ax
 						if (characters[id].vx < -maxVx) characters[id].vx = -maxVx
 					}
+					if (characters[id].jump === false) {
+						if (characters[id].mouseY < g.game.height/2) {
+							characters[id].vy = -8
+							characters[id].jump = true
+						}
+					}
 				} else {
 					if (characters[id].vx > 0) {
 						characters[id].vx -= sx
@@ -54,12 +69,22 @@ function main(param) {
 					}
 				}
 				characters[id].x += characters[id].vx
-				rect.x = characters[id].x
+
+						characters[id].vy += ay
+						if (characters[id].vy > maxVy) characters[id].vy = maxVy
+				characters[id].y += characters[id].vy
+				if (characters[id].y > chipSize*32) {
+					characters[id].y = chipSize*32
+					characters[id].vy = 0
+					characters[id].jump = false
+				}
+
+				rect.x = Math.floor(characters[id].x-width/2)
+				rect.y = Math.floor(characters[id].y-height)
 				rect.modified()
 				if (id === g.game.selfId) {
-					camera.x = characters[id].x-(g.game.width/2+32/2)
-					camera.y = characters[id].y-(g.game.height-96)
-					stage.setpos(camera.x, camera.y)
+					camera.x = Math.floor(characters[id].x-playerX)
+					camera.y = Math.floor(characters[id].y-playerY)
 					camera.modified()
 				}
 			})

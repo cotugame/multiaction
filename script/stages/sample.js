@@ -10,34 +10,36 @@ class Stage {
 		for (let y = 0; y < height; y++) {
 			this.areas[0][y] = new Array(width)
 			for (let x = 0; x < width; x++) {
-				const chr = (y < height-20) ? 0 : 8
+				const chr = (y < height-2) ? 0 : 8
 			//	this.areas[0][y][x] = {chr: chr, atr: chr}
 				this.areas[0][y][x] = {chr: chr, atr: chr}
 			}
 		}
-		for (let j = 0; j < 16; j++) {
+		for (let j = 0; j < 64; j++) {
 			const length = g.game.random.get(4, 7)
 			const x = g.game.random.get(0, width-length-1)
-			const y = g.game.random.get(0, height/4)
+			const y = g.game.random.get(0, height-8)
 			for (let i = 0; i < length; i++) {
 				const chr = 7
 				this.areas[0][y][x+i] = {chr: chr, atr: chr}
 			}
 		}
-		for (let j = 0; j < 32; j++) {
+		for (let j = 0; j < 128; j++) {
 			const length = g.game.random.get(4, 15)
 			const x = g.game.random.get(0, width-length-1)
-			const y = g.game.random.get(0, height/3)
+			const y = g.game.random.get(0, height-4)
 			for (let i = 0; i < length; i++) {
 				const chr = 9
 				this.areas[0][y][x+i] = {chr: chr, atr: chr}
 			}
 		}
+/*
 		for (let x = 0; x < width; x++) {
 			const chr = x%16
 			this.areas[0][0][x] = {chr: chr, atr: chr}
 			this.areas[0][height-1][x] = {chr: chr, atr: chr}
 		}
+*/
 		for (let y = 0; y < height; y++) {
 			const chr = y%16
 			this.areas[0][y][0] = {chr: chr, atr: chr}
@@ -81,6 +83,14 @@ class Stage {
 			}
 		}
 		scene.append(this.field)
+	}
+
+	static get chipSize() {
+		return 32
+	}
+
+	getAtr(x, y) {
+		return this.areas[0][0][x]
 	}
 
 	setpos(x, y) {
