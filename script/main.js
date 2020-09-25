@@ -1,7 +1,8 @@
 'use strict'
 const Stage = require('./stages/sample')
-const Enemy = require('./entities/enemy/enemy.js')
-const Normal = require('./entities/player/normal.js')
+const Enemy = require('./entities/enemy/enemy')
+const Boss00 = require('./entities/enemy/boss00')
+const Normal = require('./entities/player/normal')
 
 function main(param) {
 	const scene = new g.Scene({ game: g.game });
@@ -11,19 +12,21 @@ function main(param) {
 	g.game.focusingCamera = camera
 	g.game.modified = true
 
+	const enemies = []
+	const pattacks = []
+
 	scene.loaded.add(function () {
 		const ax = 1/2
 		const ay = 1/4
 		const sx = 1
-		const maxVx = 8
+		const maxVx = 4
 		const maxVy = 8
 		const characters = {}
-		const enemies = []
-		const pattacks = []
 
 		enemies.push(new Enemy(scene, 8, 29))
 		enemies.push(new Enemy(scene, 16, 29))
 		enemies.push(new Enemy(scene, 32, 29))
+		enemies.push(new Boss00(scene, 48, 29))
 
 		function createPlayer(id) {
 			const chipSize = Stage.chipSize
@@ -146,9 +149,11 @@ function main(param) {
 				}
 			//	console.log(Object.keys(characters).length, enemies.length)
 
-				if (++characters[id].attackCount > 15) {
-					new Normal(scene, characters[id].x, characters[id].y-height/2, characters[id].dir)
-					characters[id].attackCount  = 0
+				if (characters[id].dead === false) {
+					if (++characters[id].attackCount > 32) {
+						pattacks.push(new Normal(scene, characters[id].x, characters[id].y-height/2, characters[id].dir))
+						characters[id].attackCount  = 0
+					}
 				}
 			})
 			scene.append(rect)
@@ -184,6 +189,32 @@ function main(param) {
 			}
 		})
 	});
+
+	scene.update.add(() => {
+		for (let i =  pattacks.length-1; i >= 0; i--) {
+			const atk = pattacks[i]
+			if (atk.isDead) {
+				atk.destroy()
+				pattacks.splice(i, 1)
+			} else {
+				for (let j =  enemies.length-1; j >= 0; j--) {
+					const enemy = enemies[j]
+					const dx = atk.x-enemy.x
+					const dy = atk.y-enemy.y
+					const dis = Math.sqrt(dx**2+dy**2)
+					if (dis < 32) {
+						atk.destroy()
+						pattacks.splice(i, 1)
+						if (--enemy.life <= 0) {
+							enemy.destroy()
+							enemies.splice(j, 1)
+						}
+					}
+				}
+			}
+		}
+	})
+
 	g.game.pushScene(scene);
 }
 module.exports = main;

@@ -2,10 +2,12 @@
 const Obj = require('../obj')
 const Stage = require('../../stages/sample')
 
-class Normal extends Obj {
-	constructor(scene, x, y, dir) {
+class Boss00 extends Obj {
+	constructor(scene, x, y) {
 		const chipSize = Stage.chipSize
-		super(x, y, 8, 8)
+		const width = 64
+		const height = 64
+		super(x*chipSize+width/2, (y+1)*chipSize, width, height)
 		this.mode = 0
 		this.count = 0
 
@@ -15,20 +17,27 @@ class Normal extends Obj {
 			y: this.y-this.height,
 			width: this.width,
 			height: this.height,
-			cssColor: '#ffffff'
+			cssColor: '#6000a0'
 		})
 		this.rect = rect
 		rect.update.add(() => {
 			switch(this.mode) {
 			case 0:
-				this.x += dir*8
-				rect.x = this.x+dir*16
+				this.x++
+				rect.x = this.x
 				rect.modified()
-				if (++this.count > 0x40) {
+				if (++this.count > 0x100) {
 					this.mode++
 					this.count = 0
-					scene.remove(rect)
-					this.dead = true
+				}
+				break
+			case 1:
+				this.x--
+				rect.x = this.x
+				rect.modified()
+				if (++this.count > 0x100) {
+					this.mode--
+					this.count = 0
 				}
 				break
 			default:
@@ -38,5 +47,4 @@ class Normal extends Obj {
 		scene.append(rect)
 	}
 }
-
-module.exports = Normal
+module.exports = Boss00
