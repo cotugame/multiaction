@@ -13,24 +13,16 @@ class Player00 extends Player {
 		this.mode = 0
 		this.count = 0
 
-		const color = (id === g.game.selfId) ? '#60ff00' : "#ff0000"
+		const color = (id === g.game.selfId) ? '#00ff00' : "#ff0000"
 		const rect = new g.FilledRect({
 			scene: scene,
 			x: this.x-this.width/2,
 			y: this.y-this.height,
 			width: this.width,
 			height: this.height,
-		/*	x: x-width/2,
-			y: y-height,
-			width: width,
-			height: 4,*/
 			cssColor: color
 		})
-	//	rect.append(new g.FilledRect({ scene: scene, x: -4, y: 0, width: 4, height: height+4, cssColor: color }))
-	//	rect.append(new g.FilledRect({ scene: scene, x: width, y: 0, width: 4, height: height+4, cssColor: color }))
-	//	rect.append(new g.FilledRect({ scene: scene, x: -4, y: height, width: width+4, height: 4, cssColor: color }))
 		this.rect = rect
-
 
 		let vx = 0
 		let vy = 0
@@ -115,8 +107,8 @@ class Player00 extends Player {
 				}
 			}
 
-			rect.x = x-width/2
-			rect.y = y-height
+			rect.x = Math.floor(x-width/2)
+			rect.y = Math.floor(y-height)
 			rect.modified()
 			if (id === g.game.selfId) {
 				const playerPos = Player.playerPos
@@ -124,11 +116,6 @@ class Player00 extends Player {
 				camera.y = Math.floor(y-playerPos.y)
 				camera.modified()
 			}
-		})
-		rect.update.add(() => {
-		//	camera.x++
-		//	camera.modified()
-		//	console.log(this.x.toString(16), this.y.toString(16), camera.x.toString(16), camera.y.toString(16))
 		})
 		scene.append(rect)
 	}

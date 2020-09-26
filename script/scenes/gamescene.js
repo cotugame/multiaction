@@ -6,7 +6,10 @@ const Enemy = require('../entities/enemy/enemy')
 const Boss00 = require('../entities/enemy/boss00')
 
 function gameScene(stageNo, playerIds, camera) {
-	const scene = new g.Scene({ game: g.game })
+	const scene = new g.Scene({
+		game: g.game,
+		assetIds: ["entry"]
+	})
 	const players = {}
 	const enemies = []
 	const pattacks = []
@@ -27,10 +30,34 @@ function gameScene(stageNo, playerIds, camera) {
 		const x = 1*chipSize+width/2
 		const y = (29+1)*chipSize
 
+		scene.message.add(function(msg) {
+			if (!msg.data || !msg.data.playerId) return
+			console.log('msg', msg.data.playerId)
+			const id = msg.data.playerId
+			players[id] = new Player(scene, x, y, camera, id, stage)
+		})
+
 		playerIds.forEach((id) => {
 			console.log('##', id)
 			players[id] = new Player(scene, x, y, camera, id, stage)
 		})
+
+		if (players[g.game.selfId] == null) {
+			const id = g.game.selfId
+			const button = new g.Sprite({
+				scene: scene,
+				src: scene.assets["entry"],
+				x: (g.game.width-scene.assets["entry"].width)/2,
+				y: (g.game.height-scene.assets["entry"].height)/2,
+				touchable: true,
+				local: true
+			})
+			button.pointDown.add(ev => {
+				const id = ev.player.id
+				g.game.raiseEvent(new g.MessageEvent({ playerId: ev.player.id }))
+			})
+			scene.append(button)
+		}
 
 		enemies.push(new Enemy(scene, 16, 29))
 		enemies.push(new Boss00(scene, 48, 29))
@@ -44,7 +71,7 @@ function gameScene(stageNo, playerIds, camera) {
 					const dx = player.rect.x-enemy.x
 					const dy = player.rect.y-enemy.y
 					const dis = dx**2+dy**2
-					if (dis < 52**2) {
+					if (dis < 32**2) {
 						player.vy = -4
 						player.jump = true
 						player.dead = true

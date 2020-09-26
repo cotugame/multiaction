@@ -53,6 +53,18 @@
 			"type": "script",
 			"path": "script/entities/player/player00.js",
 			"global": true
+		},
+		"clear": {
+			"type": "image",
+			"width": 256,
+			"height": 144,
+			"path": "image/clear.png"
+		},
+		"entry": {
+			"type": "image",
+			"width": 256,
+			"height": 144,
+			"path": "image/entry.png"
 		}
 	},
 	"moduleMainScripts": {},
