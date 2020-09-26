@@ -3,13 +3,13 @@ const Player = require('./player')
 const Stage = require('../../stages/stage')
 
 class Player00 extends Player {
-	mouseOn = false
-	mouseX
-	mouseY
 	constructor(scene, x, y, camera, id, stage) {
 		const chipSize = Stage.chipSize
 		const width = 32, height = 32
 		super(x, y, width, height)
+		this.mouseOn = false
+		this.mouseX = 0
+		this.mouseY = 0
 		this.mode = 0
 		this.count = 0
 

@@ -3,10 +3,10 @@ const Obj = require('../obj')
 const Stage = require('../../stages/sample')
 
 class Player extends Obj {
-	attackTimer = 0
-	attackInterval = 30
 	constructor(x, y, width, height) {
 		super(x, y, width, height)
+		this.attackTimer = 0
+		this.attackInterval = 30
 	}
 
 	static get playerPos() {
