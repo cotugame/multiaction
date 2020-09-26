@@ -1,6 +1,7 @@
 'use strict'
 
 class Obj {
+	dir = 1
 	life = 4
 	dead = false
 	rect

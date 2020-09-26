@@ -33,6 +33,26 @@
 			"type": "script",
 			"path": "script/entities/obj.js",
 			"global": true
+		},
+		"gamescene": {
+			"type": "script",
+			"path": "script/scenes/gamescene.js",
+			"global": true
+		},
+		"stage": {
+			"type": "script",
+			"path": "script/stages/stage.js",
+			"global": true
+		},
+		"player": {
+			"type": "script",
+			"path": "script/entities/player/player.js",
+			"global": true
+		},
+		"player00": {
+			"type": "script",
+			"path": "script/entities/player/player00.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},

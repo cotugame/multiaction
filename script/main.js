@@ -1,7 +1,9 @@
 'use strict'
+const gameScene = require('./scenes/gamescene')
 const Stage = require('./stages/sample')
 const Enemy = require('./entities/enemy/enemy')
 const Boss00 = require('./entities/enemy/boss00')
+const Player = require('./entities/player/player00')
 const Normal = require('./entities/player/normal')
 
 function main(param) {
@@ -12,6 +14,8 @@ function main(param) {
 	g.game.focusingCamera = camera
 	g.game.modified = true
 
+
+	const characters = {}
 	const enemies = []
 	const pattacks = []
 
@@ -21,7 +25,6 @@ function main(param) {
 		const sx = 1
 		const maxVx = 4
 		const maxVy = 8
-		const characters = {}
 
 		enemies.push(new Enemy(scene, 8, 29))
 		enemies.push(new Enemy(scene, 16, 29))
@@ -29,6 +32,7 @@ function main(param) {
 		enemies.push(new Boss00(scene, 48, 29))
 
 		function createPlayer(id) {
+
 			const chipSize = Stage.chipSize
 			const playerX = g.game.width/2
 			const playerY = g.game.height-chipSize*2
@@ -38,6 +42,7 @@ function main(param) {
 			const x = 8*chipSize+width/2
 			const y = (29+1)*chipSize
 			characters[id] = {
+			/*	player: new Player(scene, x, y, camera, id, stage),*/
 				x: x,
 				y: y,
 				vx: 0,
@@ -173,6 +178,9 @@ function main(param) {
 				characters[playerId].mouseOn = true
 				characters[playerId].mouseX = x
 				characters[playerId].mouseY = y
+			/*	characters[playerId].player.mouseOn = true
+				characters[playerId].player.mouseX = x
+				characters[playerId].player.mouseY = y*/
 			}
 		}
 
@@ -186,6 +194,7 @@ function main(param) {
 			const id = ev.player.id
 			if (characters[id] != null) {
 				characters[id].mouseOn = false
+			/*	characters[id].player.mouseOn = false*/
 			}
 		})
 	});
@@ -208,6 +217,14 @@ function main(param) {
 						if (--enemy.life <= 0) {
 							enemy.destroy()
 							enemies.splice(j, 1)
+							if (enemies.length === 0) {
+
+								const players = []
+								Object.keys(characters).forEach((c) => {
+									players.push(c)
+								})
+								g.game.replaceScene(gameScene(1, players, camera))
+							}
 						}
 					}
 				}
