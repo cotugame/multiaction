@@ -6,9 +6,13 @@ const Enemy = require('../entities/enemy/enemy')
 const Boss00 = require('../entities/enemy/boss00')
 
 function gameScene(stageNo, playerIds, camera) {
+	const assetIds = []
+	assetIds.push('entry')
+	assetIds.push('tile00')
+	assetIds.push('map00')
 	const scene = new g.Scene({
 		game: g.game,
-		assetIds: ["entry"]
+		assetIds: assetIds
 	})
 	const players = {}
 	const enemies = []
@@ -24,11 +28,11 @@ function gameScene(stageNo, playerIds, camera) {
 	scene.loaded.add(() => {
 		const stage = new Stage(scene, stageNo)
 
-		const chipSize = Stage.chipSize
+		const tileSize = Stage.tileSize
 		const width = 32
 		const height = 32
-		const x = 1*chipSize+width/2
-		const y = (29+1)*chipSize
+		const x = 1*tileSize+width/2
+		const y = (29+1)*tileSize
 
 		scene.message.add(function(msg) {
 			if (!msg.data || !msg.data.playerId) return

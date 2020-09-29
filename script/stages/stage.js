@@ -1,70 +1,52 @@
 'use strict'
 
+const TILE_SIZE = 0x20
+
 class Stage {
 	constructor(scene, stage) {
 		const areaNum = 1
-		this.width = 256
-		this.height = 32
+		this.width = 0x100
+		this.height = 0x20
 		this.areas = new Array(areaNum)
-		this.areas[0] = new Array(this.height)
-		for (let y = 0; y < this.height; y++) {
-			this.areas[0][y] = new Array(this.width)
-			for (let x = 0; x < this.width; x++) {
-				const chr = (y < this.height-2) ? 0 : 8
-				this.areas[0][y][x] = {chr: chr, atr: chr}
+
+		const map = scene.assets["map00"].data
+		this.areas[0] = new Uint8Array(this.width*this.height)
+		let src = 0
+		let dst = 0
+		for (let j = 0; j < map.length/4; j++) {
+			let data = 0
+			for (let i = 0; i < 4; i++) {
+				const code = map.charCodeAt(src++)
+				if (code >= 0x41 && code <= 0x5a) {
+					data = (data<<6)|(code-0x41)
+				} else if (code >= 0x61 && code <= 0x7a) {
+					data = (data<<6)|(code-0x61+26)
+				} else if (code >= 0x30 && code <= 0x39) {
+					data = (data<<6)|(code-0x30+26*2)
+				} else if (code === 0x2b) {
+					data = (data<<6)|0x3e
+				} else {
+					data = (data<<6)|0x3f
+				}
 			}
-		}
-		for (let j = 0; j < 64; j++) {
-			const length = Math.floor(g.game.random.generate()*4)+4
-			const x = Math.floor(g.game.random.generate()*(this.width-length))
-			const y = Math.floor(g.game.random.generate()*(this.height-8))
-			for (let i = 0; i < length; i++) {
-				const chr = 7
-				this.areas[0][y][x+i] = {chr: chr, atr: chr}
-			}
-		}
-		for (let j = 0; j < 128; j++) {
-			const length = Math.floor(g.game.random.generate()*12)+4
-			const x = Math.floor(g.game.random.generate()*(this.width-length))
-			const y = Math.floor(g.game.random.generate()*(this.height-4))
-			for (let i = 0; i < length; i++) {
-				const chr = 9
-				this.areas[0][y][x+i] = {chr: chr, atr: chr}
-			}
+			this.areas[0][dst++] = (data>>16)&0xff
+			this.areas[0][dst++] = (data>>8)&0xff
+			this.areas[0][dst++] = data&0xff
 		}
 
-		const colors = [
-			'#000000',	// 00
-			'#0000ff',	// 01
-			'#ff0000',	// 02
-			'#ff00ff',	// 03
-			'#00ff00',	// 04
-			'#00ffff',	// 05
-			'#ffff00',	// 06
-			'#ffffff',	// 07
-
-			'#804040',	// 08
-			'#00a000',	// 09
-			'#7f0000',	// 0a
-			'#7f007f',	// 0b
-			'#007f00',	// 0c
-			'#007f7f',	// 0d
-			'#7f7f00',	// 0e
-			'#7f7f7f',	// 0f
-		]
-
-		this.size = 32
+		const srcWidth = Math.floor(scene.assets["tile00"].width/TILE_SIZE)
 		this.field = new g.E({ scene: scene })
 		for(let y = 0; y < this.height; y++) {
 			for(let x = 0; x < this.width; x++) {
-				const rect = new g.FilledRect({
+				const rect = new g.Sprite({
 					scene: scene,
-					x: x*this.size,
-					y: y*this.size,
-					width: this.size,
-					height: this.size,
-				//	cssColor: ((x+y)%2 == 0) ? "#000000" : "#6000a0"
-					cssColor: colors[this.areas[0][y][x].chr]
+					src: scene.assets["tile00"],
+					x: x*TILE_SIZE,
+					y: y*TILE_SIZE,
+					width: TILE_SIZE,
+					height: TILE_SIZE,
+					srcX: (this.areas[0][y*this.width+x]%srcWidth)*TILE_SIZE,
+					srcY: Math.floor(this.areas[0][y*this.width+x]/srcWidth)*TILE_SIZE
 				})
 				this.field.append(rect)
 			}
@@ -72,17 +54,21 @@ class Stage {
 		scene.append(this.field)
 	}
 
+	static get tileSize() {
+		return TILE_SIZE
+	}
+
 	static get chipSize() {
-		return 32
+		console.log('***************** chipSize')
+		return TILE_SIZE
 	}
 
 	getAtr(x, y) {
-		const chipSize = Stage.chipSize;
-		const xx = Math.floor(x/chipSize)
-		const yy = Math.floor(y/chipSize)
+		const xx = Math.floor(x/TILE_SIZE)
+		const yy = Math.floor(y/TILE_SIZE)
 		if (xx < 0 || xx >= this.width) return 0
 		if (yy < 0 || yy >= this.height) return 0
-		return this.areas[0][yy][xx].atr
+		return (this.areas[0][yy*this.width+xx] & 0xe0) ? 0xff : 0
 	}
 }
 
