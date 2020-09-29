@@ -34,16 +34,23 @@ function gameScene(stageNo, playerIds, camera) {
 		const x = 1*tileSize+width/2
 		const y = (29+1)*tileSize
 
+		const objLayer = new g.E({
+			scene: scene,
+			x: 0,
+			y: 0
+		})
+		scene.append(objLayer)
+
 		scene.message.add(function(msg) {
 			if (!msg.data || !msg.data.playerId) return
 			console.log('msg', msg.data.playerId)
 			const id = msg.data.playerId
-			players[id] = new Player(scene, x, y, camera, id, stage)
+			players[id] = new Player(scene, objLayer, x, y, camera, id, stage)
 		})
 
 		playerIds.forEach((id) => {
 			console.log('##', id)
-			players[id] = new Player(scene, x, y, camera, id, stage)
+			players[id] = new Player(scene, objLayer, x, y, camera, id, stage)
 		})
 
 		if (players[g.game.selfId] == null) {
@@ -63,8 +70,34 @@ function gameScene(stageNo, playerIds, camera) {
 			scene.append(button)
 		}
 
-		enemies.push(new Enemy(scene, 16, 29))
-		enemies.push(new Boss00(scene, 48, 29))
+		const uiLayer = new g.E({
+			scene: scene,
+			x: 0,
+			y: 0
+		})
+		uiLayer.update.add(() => {
+			uiLayer.x = camera.x
+			uiLayer.y = camera.y
+		})
+		scene.append(uiLayer)
+
+		enemies.push(new Enemy(scene, objLayer, 16, 29))
+		enemies.push(new Boss00(scene, objLayer, 48, 29))
+
+		const rect = new g.FilledRect({
+			scene: scene,
+			x: 0x20,
+			y: 0x10,
+			width: 0x40,
+			height: 0x10,
+			cssColor: "yellow"
+		})
+		rect.update.add(() => {
+			if (players[g.game.selfId]) {
+				rect.width = players[g.game.selfId].life
+			}
+		})
+		uiLayer.append(rect)
 	})
 
 	scene.update.add(() => {
@@ -72,13 +105,16 @@ function gameScene(stageNo, playerIds, camera) {
 			const player = players[id]
 			if (player.isDead === false) {
 				enemies.forEach((enemy) => {
-					const dx = player.rect.x-enemy.x
-					const dy = player.rect.y-enemy.y
+					const dx = (player.rect.x+player.width/2)-enemy.x
+					const dy = (player.rect.y+player.height)-enemy.y
 					const dis = dx**2+dy**2
 					if (dis < 32**2) {
-						player.vy = -4
-						player.jump = true
-						player.dead = true
+						player.life--
+						if (player.life <= 0) {
+							player.vy = -4
+							player.jump = true
+							player.dead = true
+						}
 					}
 				})
 				if (player.isAttack) {

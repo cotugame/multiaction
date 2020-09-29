@@ -3,7 +3,7 @@ const Obj = require('../obj')
 const Stage = require('../../stages/sample')
 
 class Enemy extends Obj {
-	constructor(scene, x, y) {
+	constructor(scene, layer, x, y) {
 		const chipSize = Stage.chipSize
 		const width = 32, height = 32
 		super(x*chipSize+width/2, (y+1)*chipSize, width, height)
@@ -43,7 +43,7 @@ class Enemy extends Obj {
 				break
 			}
 		})
-		scene.append(rect)
+		layer.append(rect)
 	}
 }
 module.exports = Enemy

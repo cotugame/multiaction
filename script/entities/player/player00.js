@@ -3,10 +3,11 @@ const Player = require('./player')
 const Stage = require('../../stages/stage')
 
 class Player00 extends Player {
-	constructor(scene, x, y, camera, id, stage) {
+	constructor(scene, layer, x, y, camera, id, stage) {
 		const chipSize = Stage.chipSize
 		const width = 32, height = 32
 		super(x, y, width, height)
+		this.life = 64
 		this.mouseOn = false
 		this.mouseX = 0
 		this.mouseY = 0
@@ -117,7 +118,7 @@ class Player00 extends Player {
 				camera.modified()
 			}
 		})
-		scene.append(rect)
+		layer.append(rect)
 	}
 }
 
