@@ -31,8 +31,7 @@ function gameScene(stageNo, playerIds, camera) {
 		const tileSize = Stage.tileSize
 		const width = 32
 		const height = 32
-		const x = 1*tileSize+width/2
-		const y = (29+1)*tileSize
+		const playerpos = {x: 0, y:0}
 
 		const objLayer = new g.E({
 			scene: scene,
@@ -41,16 +40,33 @@ function gameScene(stageNo, playerIds, camera) {
 		})
 		scene.append(objLayer)
 
+		stage.getatr((x, y, atr) => {
+			switch(atr) {
+			case 0x01:
+				playerIds.forEach((id) => {
+					const px = x*tileSize+width/2
+					const py = (y+1)*tileSize
+					players[id] = new Player(scene, objLayer, px, py, camera, id, stage)
+					playerpos.x = px
+					playerpos.y = py
+				})
+				break
+			case 0x02:
+				enemies.push(new Enemy(scene, objLayer, x, y))
+				break
+			case 0x03:
+				enemies.push(new Boss00(scene, objLayer, x, y))
+				break
+			default:
+				break
+			}
+		})
+
 		scene.message.add(function(msg) {
 			if (!msg.data || !msg.data.playerId) return
 			console.log('msg', msg.data.playerId)
 			const id = msg.data.playerId
-			players[id] = new Player(scene, objLayer, x, y, camera, id, stage)
-		})
-
-		playerIds.forEach((id) => {
-			console.log('##', id)
-			players[id] = new Player(scene, objLayer, x, y, camera, id, stage)
+			players[id] = new Player(scene, objLayer, playerpos.x, playerpos.y, camera, id, stage)
 		})
 
 		if (players[g.game.selfId] == null) {
@@ -80,9 +96,6 @@ function gameScene(stageNo, playerIds, camera) {
 			uiLayer.y = camera.y
 		})
 		scene.append(uiLayer)
-
-		enemies.push(new Enemy(scene, objLayer, 16, 29))
-		enemies.push(new Boss00(scene, objLayer, 48, 29))
 
 		const rect = new g.FilledRect({
 			scene: scene,

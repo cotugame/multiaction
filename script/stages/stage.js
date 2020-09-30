@@ -10,7 +10,7 @@ class Stage {
 		this.areas = new Array(areaNum)
 
 		const map = scene.assets["map00"].data
-		this.areas[0] = new Uint8Array(this.width*this.height)
+		this.areas[0] = new Uint8Array(this.width*this.height*2)
 		let src = 0
 		let dst = 0
 		for (let j = 0; j < map.length/4; j++) {
@@ -52,6 +52,17 @@ class Stage {
 			}
 		}
 		scene.append(this.field)
+	}
+
+	getatr(func) {
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const atr = this.areas[0][(y+this.height)*this.width+x]
+				if (atr !== 0) {
+					func(x, y, atr)
+				}
+			}
+		}
 	}
 
 	static get tileSize() {
