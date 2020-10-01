@@ -5,6 +5,7 @@ const TILE_SIZE = 0x20
 class Stage {
 	constructor(scene, stage) {
 		const areaNum = 1
+		this.scene = scene
 		this.width = 0x100
 		this.height = 0x20
 		this.areas = new Array(areaNum)
@@ -34,24 +35,27 @@ class Stage {
 			this.areas[0][dst++] = data&0xff
 		}
 
-		const srcWidth = Math.floor(scene.assets["tile00"].width/TILE_SIZE)
 		this.field = new g.E({ scene: scene })
 		for(let y = 0; y < this.height; y++) {
 			for(let x = 0; x < this.width; x++) {
-				const rect = new g.Sprite({
-					scene: scene,
-					src: scene.assets["tile00"],
-					x: x*TILE_SIZE,
-					y: y*TILE_SIZE,
-					width: TILE_SIZE,
-					height: TILE_SIZE,
-					srcX: (this.areas[0][y*this.width+x]%srcWidth)*TILE_SIZE,
-					srcY: Math.floor(this.areas[0][y*this.width+x]/srcWidth)*TILE_SIZE
-				})
-				this.field.append(rect)
+				this.field.append(this.createTile(x, y, this.areas[0][y*this.width+x]))
 			}
 		}
 		scene.append(this.field)
+	}
+
+	createTile(x, y, no) {
+		const srcWidth = Math.floor(this.scene.assets["tile00"].width/TILE_SIZE)
+		return new g.Sprite({
+			scene: this.scene,
+			src: this.scene.assets["tile00"],
+			x: x*TILE_SIZE,
+			y: y*TILE_SIZE,
+			width: TILE_SIZE,
+			height: TILE_SIZE,
+			srcX: (no%srcWidth)*TILE_SIZE,
+			srcY: Math.floor(no/srcWidth)*TILE_SIZE
+		})
 	}
 
 	getatr(func) {

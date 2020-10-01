@@ -75,6 +75,16 @@
 		"map00": {
 			"type": "text",
 			"path": "text/map00.b64"
+		},
+		"item": {
+			"type": "script",
+			"path": "script/entities/item/item.js",
+			"global": true
+		},
+		"item00": {
+			"type": "script",
+			"path": "script/entities/item/item00.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},

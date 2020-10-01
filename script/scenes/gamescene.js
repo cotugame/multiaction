@@ -4,6 +4,7 @@ const Player = require('../entities/player/player00')
 const Normal = require('../entities/player/normal')
 const Enemy = require('../entities/enemy/enemy')
 const Boss00 = require('../entities/enemy/boss00')
+const Item00 = require('../entities/item/item00')
 
 function gameScene(stageNo, playerIds, camera) {
 	const assetIds = []
@@ -15,6 +16,7 @@ function gameScene(stageNo, playerIds, camera) {
 		assetIds: assetIds
 	})
 	const players = {}
+	const items = []
 	const enemies = []
 	const pattacks = []
 
@@ -57,7 +59,13 @@ function gameScene(stageNo, playerIds, camera) {
 			case 0x03:
 				enemies.push(new Boss00(scene, objLayer, x, y))
 				break
+			case 0x10:
+			case 0x11:
+			case 0x12:
+				items.push(new Item00(stage, objLayer, x, y, atr))
+				break
 			default:
+				console.log('>>>>', x.toString(16), y.toString(16), atr.toString(16))
 				break
 			}
 		})
@@ -117,6 +125,16 @@ function gameScene(stageNo, playerIds, camera) {
 		Object.keys(players).forEach((id) => {
 			const player = players[id]
 			if (player.isDead === false) {
+				for (let i =  items.length-1; i >= 0; i--) {
+					const item = items[i]
+					const dx = (player.rect.x+player.width/2)-item.x
+					const dy = (player.rect.y+player.height)-item.y
+					const dis = dx**2+dy**2
+					if (dis < 32**2) {
+						item.destroy()
+						items.splice(i, 1)
+					}
+				}
 				enemies.forEach((enemy) => {
 					const dx = (player.rect.x+player.width/2)-enemy.x
 					const dy = (player.rect.y+player.height)-enemy.y
