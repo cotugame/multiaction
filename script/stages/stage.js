@@ -79,8 +79,8 @@ class Stage {
 	}
 
 	getAtr(x, y) {
-		const xx = Math.floor(x/TILE_SIZE)
-		const yy = Math.floor(y/TILE_SIZE)
+		const xx = (x&-TILE_SIZE)/TILE_SIZE
+		const yy = (y&-TILE_SIZE)/TILE_SIZE
 		if (xx < 0 || xx >= this.width) return 0
 		if (yy < 0 || yy >= this.height) return 0
 		return (this.areas[0][yy*this.width+xx] & 0xe0) ? 0xff : 0

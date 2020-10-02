@@ -4,7 +4,7 @@ const Stage = require('../../stages/stage')
 
 class Player00 extends Player {
 	constructor(scene, layer, x, y, camera, id, stage) {
-		const chipSize = Stage.chipSize
+		const tileSize = Stage.tileSize
 		const width = 32, height = 32
 		super(x, y, width, height)
 		this.life = 64
@@ -28,16 +28,17 @@ class Player00 extends Player {
 		let vx = 0
 		let vy = 0
 		let jump = false
-		rect.update.add(() => {
-			const ax = 1/2
-			const ay = 1/4
-			const sx = 1
-			const maxVx = 4
-			const maxVy = 8
 
+		const ax = 2/1
+		const ay = 1/1
+		const jv = -16
+		const sx = 4
+		const maxVx = 8
+		const maxVy = 16
+		rect.update.add(() => {
 			if (this.isDead) {
-				if (y > chipSize*stage.height+height) {
-					y = chipSize*stage.height+height
+				if (y > tileSize*stage.height+height) {
+					y = tileSize*stage.height+height
 					this.vy = 0
 				}
 				this.vy += ay
@@ -49,18 +50,20 @@ class Player00 extends Player {
 			}
 
 			if (this.mouseOn) {
-				if (this.mouseX > g.game.width/2) {
+				const dx = this.mouseX+camera.x-x
+				const dy = this.mouseY+camera.y-(y-this.height/2)
+				if (dx >= 0x10) {
 					vx += ax
 					if (vx > maxVx) vx = maxVx
 					this.dir = 1
-				} else {
+				} else if (dx <= -0x10) {
 					vx -= ax
 					if (vx < -maxVx) vx = -maxVx
 					this.dir = -1
 				}
 				if (jump === false) {
-					if (this.mouseY < g.game.height/2) {
-						vy = -8
+					if (dy < -0x18) {
+						vy = jv
 						jump = true
 					}
 				}
@@ -68,20 +71,21 @@ class Player00 extends Player {
 				if (vx > 0) {
 					vx -= sx
 					if (vx < 0) vx = 0
-				} else {
+				} else if (vx < 0) {
 					vx += sx
 					if (vx > 0) vx = 0
 				}
 			}
 			x += vx
+			const w2 = Math.floor(width/2)
 			if (vx < 0) {
-				if (stage.getAtr(x-width/2, y-1) & 8) {
-					x += (chipSize-(x-width/2)%chipSize)
+				if ((stage.getAtr(x-w2, y-1) & 8) || (stage.getAtr(x-w2, y-this.height) & 8)) {
+					x = ((x-w2)&-tileSize)+tileSize+w2
 					vx = 0
 				}
-			} else {
-				if (stage.getAtr(x+width/2, y-1) & 8) {
-					x -= (x-width/2)%chipSize
+			} else if (vx > 0) {
+				if ((stage.getAtr(x+w2, y-1) & 8) || (stage.getAtr(x+w2, y-this.height) & 8)) {
+					x = ((x+w2)&-tileSize)-w2
 					vx = 0
 				}
 			}
@@ -89,19 +93,19 @@ class Player00 extends Player {
 			vy += ay
 			if (vy > maxVy) vy = maxVy
 			y += vy
-			if (y > chipSize*stage.height) {
-				y = chipSize*stage.height
+			if (y > tileSize*stage.height) {
+				y = tileSize*stage.height
 				vy = 0
 				jump = false
 			} else {
 				if (vy < 0) {
-					if (stage.getAtr(x, y-height) & 8) {
-						y += chipSize-y%chipSize
+					if ((stage.getAtr(x-w2, y-height) & 8) || (stage.getAtr(x+w2-1, y-height))) {
+						y = (y&-tileSize)+this.height
 						vy = 0
 					}
 				} else {
-					if (stage.getAtr(x, y) & 8) {
-						y -= y%chipSize
+					if ((stage.getAtr(x-w2, y) & 8) || (stage.getAtr(x+w2-1, y) & 8)) {
+						y = (y&-tileSize)
 						vy = 0
 						jump = false
 					}

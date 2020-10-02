@@ -1,10 +1,8 @@
 'use strict'
 const Obj = require('../obj')
-const Stage = require('../../stages/sample')
 
 class Normal extends Obj {
 	constructor(scene, x, y, dir) {
-		const chipSize = Stage.chipSize
 		super(x, y, 8, 8)
 		this.mode = 0
 		this.count = 0
@@ -17,7 +15,7 @@ class Normal extends Obj {
 			height: this.height,
 			cssColor: '#ffffff'
 		})
-		this.rect = rect
+		this.entity = rect
 		rect.update.add(() => {
 			switch(this.mode) {
 			case 0:
