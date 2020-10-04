@@ -5,6 +5,7 @@ const Stage = require('../../stages/stage')
 class Player00 extends Player {
 	constructor(scene, layer, x, y, camera, id, stage, blocks) {
 		const tileSize = Stage.tileSize
+		const playerOfs = Player.playerPos
 		const width = 32, height = 32
 		super(x, y, width, height)
 		this.life = 64
@@ -52,8 +53,8 @@ class Player00 extends Player {
 			}
 
 			if (this.mouseOn) {
-				const dx = this.mouseX+camera.x-this.x
-				const dy = this.mouseY+camera.y-(this.y-this.height/2)
+				const dx = this.mouseX-playerOfs.x
+				const dy = this.mouseY-playerOfs.y+this.height/2
 				if (dx >= 0x10) {
 					vx += ax
 					if (vx > maxVx) vx = maxVx
@@ -168,9 +169,8 @@ class Player00 extends Player {
 			entity.y = Math.floor(this.y-height)
 			entity.modified()
 			if (id === g.game.selfId) {
-				const playerPos = Player.playerPos
-				camera.x = Math.floor(this.x-playerPos.x)
-				camera.y = Math.floor(this.y-playerPos.y)
+				camera.x = Math.floor(this.x-playerOfs.x)
+				camera.y = Math.floor(this.y-playerOfs.y)
 				camera.modified()
 			}
 		})
