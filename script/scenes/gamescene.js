@@ -5,6 +5,7 @@ const Normal = require('../entities/player/normal')
 const Enemy = require('../entities/enemy/enemy')
 const Boss00 = require('../entities/enemy/boss00')
 const Item00 = require('../entities/item/item00')
+const Block = require('../entities/etc/block')
 
 function gameScene(stageNo, playerIds, camera) {
 	const assetIds = []
@@ -19,6 +20,7 @@ function gameScene(stageNo, playerIds, camera) {
 	const items = []
 	const enemies = []
 	const pattacks = []
+	const blocks = []
 
 	console.log('stage', stageNo)
 	console.log(playerIds)
@@ -45,12 +47,12 @@ function gameScene(stageNo, playerIds, camera) {
 		stage.getatr((x, y, atr) => {
 			switch(atr) {
 			case 0x01:
+				playerpos.x = x*tileSize+tileSize/2
+				playerpos.y = (y+1)*tileSize
+				console.log('#', playerpos.x, playerpos.y)
 				playerIds.forEach((id) => {
-					const px = x*tileSize+width/2
-					const py = (y+1)*tileSize
-					players[id] = new Player(scene, objLayer, px, py, camera, id, stage)
-					playerpos.x = px
-					playerpos.y = py
+					players[id] = new Player(scene, objLayer, playerpos.x, playerpos.y, camera, id, stage, blocks)
+					console.log('>', players[id].x, players[id].y)
 				})
 				break
 			case 0x02:
@@ -58,6 +60,9 @@ function gameScene(stageNo, playerIds, camera) {
 				break
 			case 0x03:
 				enemies.push(new Boss00(scene, objLayer, x, y))
+				break
+			case 0x04:
+				blocks.push(new Block(scene, objLayer, x, y))
 				break
 			case 0x10:
 			case 0x11:
@@ -74,7 +79,7 @@ function gameScene(stageNo, playerIds, camera) {
 			if (!msg.data || !msg.data.playerId) return
 			console.log('msg', msg.data.playerId)
 			const id = msg.data.playerId
-			players[id] = new Player(scene, objLayer, playerpos.x, playerpos.y, camera, id, stage)
+			players[id] = new Player(scene, objLayer, playerpos.x, playerpos.y, camera, id, stage, blocks)
 		})
 
 		if (players[g.game.selfId] == null) {

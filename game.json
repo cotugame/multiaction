@@ -85,6 +85,11 @@
 			"type": "script",
 			"path": "script/entities/item/item00.js",
 			"global": true
+		},
+		"block": {
+			"type": "script",
+			"path": "script/entities/etc/block.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},

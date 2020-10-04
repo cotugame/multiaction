@@ -3,7 +3,7 @@ const Player = require('./player')
 const Stage = require('../../stages/stage')
 
 class Player00 extends Player {
-	constructor(scene, layer, x, y, camera, id, stage) {
+	constructor(scene, layer, x, y, camera, id, stage, blocks) {
 		const tileSize = Stage.tileSize
 		const width = 32, height = 32
 		super(x, y, width, height)
@@ -23,6 +23,8 @@ class Player00 extends Player {
 			height: this.height,
 			cssColor: color
 		})
+		const entity = rect
+		this.entity = rect
 		this.rect = rect
 
 		let vx = 0
@@ -50,8 +52,8 @@ class Player00 extends Player {
 			}
 
 			if (this.mouseOn) {
-				const dx = this.mouseX+camera.x-x
-				const dy = this.mouseY+camera.y-(y-this.height/2)
+				const dx = this.mouseX+camera.x-this.x
+				const dy = this.mouseY+camera.y-(this.y-this.height/2)
 				if (dx >= 0x10) {
 					vx += ax
 					if (vx > maxVx) vx = maxVx
@@ -77,48 +79,98 @@ class Player00 extends Player {
 				}
 			}
 			x += vx
+			this.x = x
+
+			const p = this
+			function colchk(func) {
+				for (const block of blocks) {
+					const ww = (width+block.width)/2
+					const hh = (height+block.height)/2
+					if (p.x > block.x-ww && p.x < block.x+ww && p.y > block.y-block.height && p.y-height < block.y) {
+						func(block, ww, hh)
+						return true
+					}
+				}
+				return false
+			}
 			const w2 = Math.floor(width/2)
 			if (vx < 0) {
-				if ((stage.getAtr(x-w2, y-1) & 8) || (stage.getAtr(x-w2, y-this.height) & 8)) {
+				if ((stage.getAtr(this.x-w2, this.y-1) & 8) || (stage.getAtr(this.x-w2, this.y-this.height) & 8)) {
 					x = ((x-w2)&-tileSize)+tileSize+w2
 					vx = 0
 				}
+				colchk((block, w) => {
+					x = block.x+w
+					vx = 0
+				})
 			} else if (vx > 0) {
-				if ((stage.getAtr(x+w2, y-1) & 8) || (stage.getAtr(x+w2, y-this.height) & 8)) {
+				if ((stage.getAtr(this.x+w2, this.y-1) & 8) || (stage.getAtr(this.x+w2, this.y-this.height) & 8)) {
 					x = ((x+w2)&-tileSize)-w2
 					vx = 0
 				}
+				colchk((block, w) => {
+					x = block.x-w
+					vx = 0
+				})
 			}
 
 			vy += ay
 			if (vy > maxVy) vy = maxVy
 			y += vy
+			this.y = y
 			if (y > tileSize*stage.height) {
 				y = tileSize*stage.height
 				vy = 0
 				jump = false
 			} else {
 				if (vy < 0) {
-					if ((stage.getAtr(x-w2, y-height) & 8) || (stage.getAtr(x+w2-1, y-height))) {
+					if ((stage.getAtr(this.x-w2, this.y-height) & 8) || (stage.getAtr(this.x+w2-1, this.y-height))) {
 						y = (y&-tileSize)+this.height
 						vy = 0
 					}
+					colchk((block, w) => {
+						y = block.y+height
+						vy = 0
+					})
+					if (this.parent !== null) {
+						this.parent = null
+						x = this.x
+						y = this.y
+					}
 				} else {
-					if ((stage.getAtr(x-w2, y) & 8) || (stage.getAtr(x+w2-1, y) & 8)) {
+					if ((stage.getAtr(this.x-w2, this.y) & 8) || (stage.getAtr(this.x+w2-1, this.y) & 8)) {
 						y = (y&-tileSize)
 						vy = 0
 						jump = false
 					}
+					if (colchk((block, w) => {
+						if (this.parent === null) {
+							this.parent = block
+							x = x-block.x
+						}
+						y = -block.height
+					//	y = block.y-block.height
+						vy = 0
+						jump = false
+					}) === false) {
+						if (this.parent !== null) {
+							this.parent = null
+							x = this.x
+							y = this.y
+						}
+					}
 				}
 			}
 
-			rect.x = Math.floor(x-width/2)
-			rect.y = Math.floor(y-height)
-			rect.modified()
+			this.x = x
+			this.y = y
+			entity.x = Math.floor(this.x-width/2)
+			entity.y = Math.floor(this.y-height)
+			entity.modified()
 			if (id === g.game.selfId) {
 				const playerPos = Player.playerPos
-				camera.x = Math.floor(x-playerPos.x)
-				camera.y = Math.floor(y-playerPos.y)
+				camera.x = Math.floor(this.x-playerPos.x)
+				camera.y = Math.floor(this.y-playerPos.y)
 				camera.modified()
 			}
 		})

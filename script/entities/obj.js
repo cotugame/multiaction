@@ -2,8 +2,9 @@
 
 class Obj {
 	constructor(x, y, width, height) {
-		this.x = x
-		this.y = y
+		this._x = x
+		this._y = y
+		this._parent = null
 		this.width = width
 		this.height = height
 		this.dir = 1
@@ -23,6 +24,42 @@ class Obj {
 				this.rect.destroy()
 				this.rect = null
 			}
+		}
+	}
+
+	get x() {
+		if (this._parent) {
+			return this._x+this._parent.x
+		}
+		return this._x
+	}
+
+	set x(x) {
+		this._x = x
+	}
+
+	get y() {
+		if (this._parent) {
+			return this._y+this._parent.y
+		}
+		return this._y
+	}
+
+	set y(y) {
+		this._y = y
+	}
+
+	get parent() {
+		return this._parent
+	}
+
+	set parent(parent) {
+		if (parent === null) {
+			this._x = this.x
+			this._y = this.y
+			this._parent = null
+		} else {
+			this._parent = parent
 		}
 	}
 
