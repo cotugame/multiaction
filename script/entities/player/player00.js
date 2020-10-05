@@ -14,19 +14,30 @@ class Player00 extends Player {
 		this.mouseY = 0
 		this.mode = 0
 		this.count = 0
+		this.anim = [
+			[0],
+			[0, 1],
+			[2],
+			[3]
+		]
 
 		const color = (id === g.game.selfId) ? '#00ff00' : "#ff0000"
-		const rect = new g.FilledRect({
+		const entity = new g.FrameSprite({
 			scene: scene,
+			src: scene.assets["anmplayer"],
 			x: this.x-this.width/2,
 			y: this.y-this.height,
 			width: this.width,
 			height: this.height,
-			cssColor: color
+			scaleX: 1,
+			frames: this.anim[this.animNo],
+			interval: 1000/4,
+			loop: true
 		})
-		const entity = rect
-		this.entity = rect
-		this.rect = rect
+		const rect = entity
+		this.entity = entity
+		this.rect = entity
+		entity.start()
 
 		let vx = 0
 		let vy = 0
@@ -59,10 +70,12 @@ class Player00 extends Player {
 					vx += ax
 					if (vx > maxVx) vx = maxVx
 					this.dir = 1
+					entity.scaleX = this.dir
 				} else if (dx <= -0x10) {
 					vx -= ax
 					if (vx < -maxVx) vx = -maxVx
 					this.dir = -1
+					entity.scaleX = this.dir
 				}
 				if (jump === false) {
 					if (dy < -0x18) {
@@ -162,6 +175,16 @@ class Player00 extends Player {
 					}
 				}
 			}
+
+			let ano = 0
+			if (jump === true) {
+				ano = 2
+			} else {
+				if (vx != 0) {
+					ano = 1
+				}
+			}
+			this.setAnim(ano)
 
 			this.x = x
 			this.y = y

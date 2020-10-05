@@ -90,6 +90,12 @@
 			"type": "script",
 			"path": "script/entities/etc/block.js",
 			"global": true
+		},
+		"anmplayer": {
+			"type": "image",
+			"width": 256,
+			"height": 128,
+			"path": "image/anim/anmplayer.png"
 		}
 	},
 	"moduleMainScripts": {},

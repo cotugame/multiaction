@@ -12,6 +12,7 @@ function gameScene(stageNo, playerIds, camera) {
 	assetIds.push('entry')
 	assetIds.push('tile00')
 	assetIds.push('map00')
+	assetIds.push('anmplayer')
 	const scene = new g.Scene({
 		game: g.game,
 		assetIds: assetIds

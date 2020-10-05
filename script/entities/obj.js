@@ -7,6 +7,8 @@ class Obj {
 		this._parent = null
 		this.width = width
 		this.height = height
+		this.animNo = 0
+		this.anim = []
 		this.dir = 1
 		this.life = 4
 		this.dead = false
@@ -65,6 +67,14 @@ class Obj {
 
 	get isDead() {
 		return this.dead
+	}
+
+	setAnim(no) {
+		if (this.animNo !== no) {
+			this.animNo = no
+			this.entity.frames = this.anim[no]
+			this.entity.frameNumber = 0
+		}
 	}
 }
 
