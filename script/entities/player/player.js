@@ -7,6 +7,7 @@ class Player extends Obj {
 		super(x, y, width, height)
 		this.attackTimer = 0
 		this.attackInterval = 30
+		this.damageTimer = 0
 	}
 
 	static get playerPos() {

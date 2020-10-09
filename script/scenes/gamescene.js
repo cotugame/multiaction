@@ -130,7 +130,8 @@ function gameScene(stageNo, playerIds, camera) {
 	scene.update.add(() => {
 		Object.keys(players).forEach((id) => {
 			const player = players[id]
-			if (player.isDead === false) {
+			if (player.damageTimer > 0) player.damageTimer--
+			if (player.isDead === false && player.damageTimer === 0) {
 				for (let i =  items.length-1; i >= 0; i--) {
 					const item = items[i]
 					const dx = (player.rect.x+player.width/2)-item.x
@@ -147,7 +148,13 @@ function gameScene(stageNo, playerIds, camera) {
 					const dis = dx**2+dy**2
 					if (dis < 32**2) {
 						player.life--
-						if (player.life <= 0) {
+						player.damageTimer = 60
+						player.setAnim(3)
+						if (player.life >  0) {
+							player.vy = -8
+							player.vx = -(player.dir*2)
+							player.jump = true
+						} else {
 							player.vy = -4
 							player.jump = true
 							player.dead = true

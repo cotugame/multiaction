@@ -7,6 +7,8 @@ class Obj {
 		this._parent = null
 		this.width = width
 		this.height = height
+		this.vx = 0
+		this.vy = 0
 		this.animNo = 0
 		this.anim = []
 		this.dir = 1
@@ -37,7 +39,11 @@ class Obj {
 	}
 
 	set x(x) {
-		this._x = x
+		if (this._parent) {
+			this._x = x-this._parent.x
+		} else {
+			this._x = x
+		}
 	}
 
 	get y() {
@@ -48,7 +54,11 @@ class Obj {
 	}
 
 	set y(y) {
-		this._y = y
+		if (this._parent) {
+			this._y = y-this._parent.y
+		} else {
+			this._y = y
+		}
 	}
 
 	get parent() {
@@ -61,6 +71,8 @@ class Obj {
 			this._y = this.y
 			this._parent = null
 		} else {
+			this._x -= parent.x
+			this._y -= parent.y
 			this._parent = parent
 		}
 	}
